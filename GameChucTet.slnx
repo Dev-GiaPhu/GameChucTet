@@ -1,0 +1,6 @@
+﻿<Solution>
+  <Project Path="OpenAI.csproj" />
+  <Project Path="OpenAI.Tests.csproj" />
+  <Project Path="OpenAI.Editor.csproj" />
+  <Project Path="Assembly-CSharp.csproj" />
+</Solution>
