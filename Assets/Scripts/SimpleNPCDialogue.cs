@@ -2,186 +2,140 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems; // BẮT BUỘC có thêm cái này
 
 public class SimpleNPCDialogue : MonoBehaviour
 {
-    [Header("Reference")]
+    [Header("References")]
     public GameFlow gameFlow;
-    public RectTransform npc;
-    public RectTransform frame;
-    public TMP_Text text;
+    public RectTransform npc;     
+    public RectTransform frame;   
+    public TMP_Text text;         
 
-    [Header("NPC Position")]
-    public Vector2 npcOffScreenPos;
-    public Vector2 npcOnScreenPos;
+    [Header("Vị trí Trượt (Slide Settings)")]
+    public Vector2 npcOffScreenPos = new Vector2(-1200, 0); 
+    public Vector2 npcOnScreenPos = new Vector2(-450, 0);   
+    public Vector2 frameOffScreenPos = new Vector2(0, -800);
+    public Vector2 frameOnScreenPos = new Vector2(0, -350);
 
-    [Header("Frame Position")]
-    public Vector2 frameOffScreenPos;
-    public Vector2 frameOnScreenPos;
-
-    [Header("NPC Scale")]
-    public Vector3 npcStartScale = Vector3.zero;
-    public Vector3 npcTargetScale = Vector3.one;
-
-    [Header("Frame Scale")]
-    public Vector3 frameStartScale = Vector3.zero;
-    public Vector3 frameTargetScale = Vector3.one;
-
-    [Header("Speed")]
-    public float slideSpeed = 8f;
-    public float scaleSpeed = 8f;
+    [Header("Cấu hình Hiệu ứng")]
+    public float slideSpeed = 8f;     
+    public float rotateAmplitude = 8f; 
+    public float rotateSpeed = 10f;    
     public float typingSpeed = 0.04f;
 
-    [Header("NPC Idle Motion")]
-    public float rotateAmplitude = 5f;     // độ xoay (độ)
-    public float rotateSpeed = 2f;          // tốc độ xoay
-
-    bool isTyping;
-    bool isShowing;
-    bool skipTyping;
-
-    string fullText;
-    Coroutine dialogueRoutine;
-
-    Quaternion npcBaseRotation;
+    private bool isTyping;
+    private bool isShowing;
+    private bool skipTyping;
+    private string fullText;
+    
+    private Quaternion npcBaseRotation;
+    private Vector3 npcTargetScale; 
+    private Vector3 frameTargetScale;
 
     void Awake()
     {
-        npcBaseRotation = npc.localRotation;
+        if (npc != null) 
+        {
+            npcBaseRotation = npc.localRotation;
+            npcTargetScale = npc.localScale;
+        }
+        if (frame != null) frameTargetScale = frame.localScale;
         ResetVisual();
     }
 
     void ResetVisual()
     {
+        isShowing = false;
         npc.anchoredPosition = npcOffScreenPos;
         frame.anchoredPosition = frameOffScreenPos;
-
-        npc.localScale = npcStartScale;
-        frame.localScale = frameStartScale;
-
-        npc.localRotation = npcBaseRotation;
-
-        text.text = "";
-
-        isShowing = false;
-        isTyping = false;
-        skipTyping = false;
+        npc.localScale = Vector3.zero;
+        frame.localScale = Vector3.zero;
     }
 
-    // ===================== PUBLIC =====================
-
-    public void Speak(string sentence)
+    public void Speak(string content)
     {
-        fullText = sentence;
-
-        if (dialogueRoutine != null)
-            StopCoroutine(dialogueRoutine);
-
-        dialogueRoutine = StartCoroutine(DialogueFlow());
-    }
-
-    public void Hide()
-    {
-        if (dialogueRoutine != null)
-            StopCoroutine(dialogueRoutine);
-
-        StartCoroutine(HideRoutine());
-    }
-
-    // ===================== CORE =====================
-
-    IEnumerator DialogueFlow()
-    {
-        // ===== CHỈ ANIMATE LẦN ĐẦU =====
-        if (!isShowing)
+        fullText = content;
+        if (isShowing)
         {
-            isShowing = true;
-
-            while (
-                Vector2.Distance(npc.anchoredPosition, npcOnScreenPos) > 0.5f ||
-                Vector2.Distance(frame.anchoredPosition, frameOnScreenPos) > 0.5f
-            )
-            {
-                npc.anchoredPosition =
-                    Vector2.Lerp(npc.anchoredPosition, npcOnScreenPos, Time.deltaTime * slideSpeed);
-                frame.anchoredPosition =
-                    Vector2.Lerp(frame.anchoredPosition, frameOnScreenPos, Time.deltaTime * slideSpeed);
-
-                npc.localScale =
-                    Vector3.Lerp(npc.localScale, npcTargetScale, Time.deltaTime * scaleSpeed);
-                frame.localScale =
-                    Vector3.Lerp(frame.localScale, frameTargetScale, Time.deltaTime * scaleSpeed);
-
-                yield return null;
-            }
-
-            npc.anchoredPosition = npcOnScreenPos;
-            frame.anchoredPosition = frameOnScreenPos;
-            npc.localScale = npcTargetScale;
-            frame.localScale = frameTargetScale;
+            StopAllCoroutines();
+            StartCoroutine(TypeTextOnly());
         }
+        else
+        {
+            StopAllCoroutines();
+            StartCoroutine(ShowRoutine());
+        }
+    }
 
-        // ===== TYPE TEXT =====
+    IEnumerator TypeTextOnly()
+    {
         text.text = "";
         isTyping = true;
         skipTyping = false;
-
         foreach (char c in fullText)
         {
             if (skipTyping) break;
-
             text.text += c;
-            yield return new WaitForSecondsRealtime(typingSpeed);
+            yield return new WaitForSeconds(typingSpeed);
         }
-
         text.text = fullText;
         isTyping = false;
     }
 
-    IEnumerator HideRoutine()
+    IEnumerator ShowRoutine()
     {
-        isShowing = false;
-
-        while (
-            Vector2.Distance(npc.anchoredPosition, npcOffScreenPos) > 0.5f ||
-            Vector2.Distance(frame.anchoredPosition, frameOffScreenPos) > 0.5f
-        )
+        isShowing = true;
+        float t = 0;
+        while (t < 1f)
         {
-            npc.anchoredPosition =
-                Vector2.Lerp(npc.anchoredPosition, npcOffScreenPos, Time.deltaTime * slideSpeed);
-            frame.anchoredPosition =
-                Vector2.Lerp(frame.anchoredPosition, frameOffScreenPos, Time.deltaTime * slideSpeed);
-
+            t += Time.deltaTime * slideSpeed;
+            npc.anchoredPosition = Vector2.Lerp(npc.anchoredPosition, npcOnScreenPos, t);
+            frame.anchoredPosition = Vector2.Lerp(frame.anchoredPosition, frameOnScreenPos, t);
+            npc.localScale = Vector3.Lerp(Vector3.zero, npcTargetScale, t);
+            frame.localScale = Vector3.Lerp(Vector3.zero, frameTargetScale, t);
             yield return null;
         }
-
-        ResetVisual();
+        yield return StartCoroutine(TypeTextOnly());
     }
 
-    // ===================== INPUT =====================
+    public void Hide()
+    {
+        StopAllCoroutines();
+        StartCoroutine(HideRoutine());
+    }
+
+    IEnumerator HideRoutine()
+    {
+        float t = 0;
+        while (t < 1f)
+        {
+            t += Time.deltaTime * slideSpeed;
+            npc.anchoredPosition = Vector2.Lerp(npc.anchoredPosition, npcOffScreenPos, t);
+            frame.anchoredPosition = Vector2.Lerp(frame.anchoredPosition, frameOffScreenPos, t);
+            npc.localScale = Vector3.Lerp(npc.localScale, Vector3.zero, t);
+            frame.localScale = Vector3.Lerp(frame.localScale, Vector3.zero, t);
+            yield return null;
+        }
+        isShowing = false;
+    }
 
     void Update()
     {
-        // ===== IDLE ROTATION NPC =====
-        if (isShowing)
+        if (isShowing && npc != null)
         {
-            float angle =
-                Mathf.Sin(Time.time * rotateSpeed) * rotateAmplitude;
-            npc.localRotation =
-                npcBaseRotation * Quaternion.Euler(0, 0, angle);
+            float angle = Mathf.Sin(Time.time * rotateSpeed) * rotateAmplitude;
+            npc.localRotation = npcBaseRotation * Quaternion.Euler(0, 0, angle);
         }
 
-        if (Mouse.current == null) return;
-
-        if (Mouse.current.leftButton.wasPressedThisFrame)
+        // KIỂM TRA CLICK CHUỘT NHƯNG CHỪA CÁC NÚT BẤM (BUTTON) RA
+        if (isShowing && Mouse.current.leftButton.wasPressedThisFrame)
         {
-            if (isTyping)
+            // Nếu chuột ĐANG KHÔNG đè lên một UI Object nào đó (như Button)
+            if (!EventSystem.current.IsPointerOverGameObject())
             {
-                skipTyping = true; // click 1 → skip chữ
-            }
-            else
-            {
-                gameFlow.NextDialogue(); // click 2 → câu tiếp
+                if (isTyping) skipTyping = true;
+                else gameFlow.NextDialogue();
             }
         }
     }

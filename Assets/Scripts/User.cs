@@ -1,17 +1,5 @@
-using UnityEngine;
-
 public class User
 {
-    public string name;
-    public string mssv;
-    public string nganhHoc;
-    public string tuoi;
-
-    public User(string name, string mssv, string nganhHoc, string tuoi)
-    {
-        this.name = name;
-        this.mssv = mssv;
-        this.nganhHoc = nganhHoc;
-        this.tuoi = tuoi;
-    }
+    public string name, mssv, nganhHoc, tuoi;
+    public User(string n, string m, string t, string ng) { name=n; mssv=m; tuoi=t; nganhHoc=ng; }
 }

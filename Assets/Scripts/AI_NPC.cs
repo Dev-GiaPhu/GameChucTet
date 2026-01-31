@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 
 #region DATA STRUCT
@@ -16,7 +17,11 @@ public class ChatRequest
 {
     public string model;
     public Message[] messages;
+    public ResponseFormat response_format = new ResponseFormat { type = "json_object" };
 }
+
+[System.Serializable]
+public class ResponseFormat { public string type; }
 
 [System.Serializable]
 public class GroqResponse
@@ -63,6 +68,9 @@ public class AI_NPC : MonoBehaviour
     [TextArea(3, 10)]
     public string lastReply;
 
+    [Header("Liên kết UI")]
+    public DialogueUIController dialoCtr; 
+
     public void StartChat()
     {
         Debug.Log("<color=yellow>Người chơi chúc:</color> " + playerQuestion);
@@ -85,37 +93,26 @@ public class AI_NPC : MonoBehaviour
 
         string jsonPayload = JsonUtility.ToJson(requestData);
 
-        Debug.Log("<color=cyan>JSON gửi đi:</color>\n" + jsonPayload);
-
         UnityWebRequest request = new UnityWebRequest(url, "POST");
-        request.uploadHandler =
-            new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonPayload));
+        request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonPayload));
         request.downloadHandler = new DownloadHandlerBuffer();
 
-        request.SetRequestHeader(
-            "Authorization", "Bearer " + apiKey.Trim());
-        request.SetRequestHeader(
-            "Content-Type", "application/json");
+        request.SetRequestHeader("Authorization", "Bearer " + apiKey.Trim());
+        request.SetRequestHeader("Content-Type", "application/json");
 
         yield return request.SendWebRequest();
 
         if (request.result == UnityWebRequest.Result.Success)
         {
-            GroqResponse response =
-                JsonUtility.FromJson<GroqResponse>(
-                    request.downloadHandler.text);
+            GroqResponse response = JsonUtility.FromJson<GroqResponse>(request.downloadHandler.text);
+            string rawContent = response.choices[0].message.content;
 
-            string rawContent =
-                response.choices[0].message.content;
-
-            Debug.Log("<color=green>AI RAW:</color>\n" + rawContent);
-
+            Debug.Log("<color=green>AI RAW CONTENT:</color>\n" + rawContent);
             ParseAIResult(rawContent);
         }
         else
         {
-            Debug.LogError("Mã phản hồi: " + request.responseCode);
-            Debug.LogError("Phản hồi lỗi: " + request.downloadHandler.text);
+            Debug.LogError("LỖI API: " + request.downloadHandler.text);
         }
     }
 
@@ -123,23 +120,25 @@ public class AI_NPC : MonoBehaviour
     {
         try
         {
-            AIScoreResult data =
-                JsonUtility.FromJson<AIScoreResult>(raw);
+            AIScoreResult data = JsonUtility.FromJson<AIScoreResult>(raw);
 
-            lastScore = Mathf.Clamp(data.score, 1, 10);
+            lastScore = Mathf.Clamp(data.score, 0, 10);
             lastReply = data.reply;
 
+            // IN CẢ REPLY VÀ SCORE RA ĐÂY
             Debug.Log("<color=cyan>NPC nói:</color> " + lastReply);
-            Debug.Log("<color=yellow>Điểm:</color> " + lastScore);
+            Debug.Log("<color=orange>ĐIỂM SỐ:</color> " + lastScore);
 
-            // ===== GẮN VÀO GAME Ở ĐÂY =====
-            // npcDialogue.Speak(lastReply);
-            // gameFlow.AddScore(lastScore);
+            // ĐẨY CHỮ LÊN UI
+            if (dialoCtr != null)
+            {
+                dialoCtr.NPC_Say(lastReply);
+            }
         }
         catch
         {
-            Debug.LogError("❌ AI không trả đúng JSON!");
-            Debug.LogError(raw);
+            Debug.LogError("❌ AI trả JSON sai format hoặc thiếu trường!");
+            Debug.LogError("Raw trả về: " + raw);
         }
     }
 }
