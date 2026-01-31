@@ -139,6 +139,30 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: -1
       objectReference: {fileID: 0}
+    - target: {fileID: 5588992648713534297, guid: ff3ea8f54631c98449047bc659820565, type: 3}
+      propertyPath: promptAI
+      value: "B\u1EA1n l\xE0 NPC ng\u01B0\u1EDDi b\xE0, trong gian ng\xE0y m\xF9ng
+        1 t\u1EBFt, v\xE0 ng\u01B0\u1EDDi ch\u01A1i s\u1EBD ch\xFAc t\u1EBFt, b\u1EA1n
+        h\xE3y \u0111\xE1nh gi\xE1 l\u1EDDi ch\xFAc ng\u01B0\u1EDDi ch\u01A1i v\xE0
+        tr\u1EA3 v\u1EC1 \u0111i\u1EC3m s\u1ED1 t\u1EEB 1 \u0111\u1EBFn 10 theo ti\xEAu
+        ch\xED s\u1EDF th\xEDch nh\xE2n v\u1EADt v\xE0 ch\xFAc t\u1EBFt l\u1EA1i
+        ng\u01B0\u1EDDi ch\u01A1i, tr\u1EA3 l\u1EDDi ng\u1EAFn g\u1ECDn, ng\u01B0\u1EDDi
+        b\xE0 th\u01B0\u1EDDng th\xEDch \u0111\u01B0\u1EE3c ch\xFAc v\u1EC1 s\u1EE9c
+        kho\u1EBB v\xE0 tu\u1ED5i t\xE1c s\u1ED1ng l\xE2u, v\xE0 th\u01B0\u1EDDng
+        ch\xFAc v\u1EC1 h\u1ECDc t\u1EADp. T\u1EF1 x\u01B0ng l\xE0 b\xE0 v\xE0 g\u1ECDi
+        ng\u01B0\u1EDDi ch\u01A1i l\xE0 con. Tr\u1EA3 l\u1EDDi ng\u1EAFn g\u1ECDn
+        theo c\xF4ng th\u1EE9c: B\xE0 c\u1EA3m \u01A1n con! L\u1EDDi ch\xFAc c\u1EE7a
+        con b\xE0 \u0111\xE1nh gi\xE1 x/10. B\xE0 c\u0169ng ch\xFAc con .... Ngo\xE0i
+        ra b\xE0 kh\xF4ng \u0111\xE1nh gi\xE1 g\xEC kh\xE1c. N\u1EBFu ng\u01B0\u1EDDi
+        ch\u01A1i kh\xF4ng ch\xFAc m\xE0 h\u1ECFi c\xE1c c\xE2u h\u1ECFi ngo\xE0i
+        l\u1EC1 th\xEC B\xE0 s\u1EBD t\u1EEB ch\u1ED1i v\u1EC1 tr\u1EA3 l\u1EDDi
+        c\xE1c c\xE2u h\u1ECFi ngo\xE0i l\u1EC1 kho\xE9 l\xE9o v\u1EDBi t\u01B0 c\xE1ch
+        v\xE0 ki\u1EC3u x\u01B0ng h\xF4 l\xE0 m\u1ED9t ng\u01B0\u1EDDi b\xE0."
+      objectReference: {fileID: 0}
+    - target: {fileID: 5588992648713534297, guid: ff3ea8f54631c98449047bc659820565, type: 3}
+      propertyPath: playerQuestion
+      value: "Ch\xFAc l\u1EA1i con 1 c\xE2u ch\xFAc \u0111i"
+      objectReference: {fileID: 0}
     - target: {fileID: 6103478643107899717, guid: ff3ea8f54631c98449047bc659820565, type: 3}
       propertyPath: m_Name
       value: GamePlay - Prefab
@@ -590,13 +614,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5ff36bbf4f3a428489a5f47390df8e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameController
-  sprites:
-  - {fileID: 21300000, guid: 909040f7d14bf454db72ec44fa761aa4, type: 3}
-  - {fileID: -652271592552779161, guid: 897fe178e625a4f40af908f9c1374d51, type: 3}
-  - {fileID: 3535907840136803043, guid: 7583119e34d464cc38e7475917da866e, type: 3}
-  - {fileID: 5665228931880133162, guid: 46625dae343ee4c5989c74e99cc07f2b, type: 3}
-  - {fileID: -2655188883255150592, guid: f9d17c92154f64825a53a18f1c1f1668, type: 3}
-  - {fileID: -1497766511011995446, guid: 1060302a433ff4ba9b84b4b12ef8364b, type: 3}
+  canvas: {fileID: 0}
+  nameOJ: {fileID: 0}
+  mssvOJ: {fileID: 0}
+  tuoiOJ: {fileID: 0}
+  nganhOJ: {fileID: 0}
+  nhapLaiPrefab: {fileID: 0}
 --- !u!4 &1706859699
 Transform:
   m_ObjectHideFlags: 0

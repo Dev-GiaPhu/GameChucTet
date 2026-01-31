@@ -10,6 +10,10 @@ using System.Text;
 
 public class AI_NPC : MonoBehaviour 
 {
+    //frame text
+    [Header("Frame Text")]
+    [TextArea]
+    public string promptAI;
     // DÁN KEY GSK CỦA BẠN VÀO ĐÂY
     public string apiKey = "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"; 
     public string playerQuestion = "Chúc bà năm mới sống lâu trăm tuổi!";
@@ -28,7 +32,7 @@ public class AI_NPC : MonoBehaviour
 
         // Thay llama3-8b-8192 bằng llama-3.1-8b-instant
         string jsonPayload = "{\"model\": \"llama-3.1-8b-instant\", \"messages\": [" +
-        "{\"role\": \"system\", \"content\": \"Bạn là NPC người bà, trong gian ngày mùng 1 tết, và người chơi sẽ chúc tết, bạn hãy đánh giá lời chúc người chơi và trả về điểm số từ 1 đến 10 theo tiêu chí sở thích nhân vật và chúc tết lại người chơi, trả lời ngắn gọn, người bà thường thích được chúc về sức khoẻ và tuổi tác sống lâu, và thường chúc về học tập. Tự xưng là bà và gọi người chơi là con. Trả lời ngắn gọn theo công thức: Bà cảm ơn con! Lời chúc của con bà đánh giá x/10. Bà cũng chúc con .... Ngoài ra bà không đánh giá gì khác.\"}," +
+        "{\"role\": \"system\", \"content\": \"" + promptAI + "\"}," +
         "{\"role\": \"user\", \"content\": \"" + playerQuestion + "\"}]}";
 
         UnityWebRequest request = new UnityWebRequest(url, "POST");
