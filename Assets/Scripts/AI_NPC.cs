@@ -3,6 +3,7 @@ using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using TMPro;
 
 #region DATA STRUCT
 [System.Serializable]
@@ -68,8 +69,10 @@ public class AI_NPC : MonoBehaviour
     [TextArea(3, 10)]
     public string lastReply;
 
-    [Header("Liên kết UI")]
-    public DialogueUIController dialoCtr; 
+    [Header("Text Speak")]
+    public TMP_Text textSpeak;
+
+    public bool isChatting = false;
 
     public void StartChat()
     {
@@ -128,17 +131,76 @@ public class AI_NPC : MonoBehaviour
             // IN CẢ REPLY VÀ SCORE RA ĐÂY
             Debug.Log("<color=cyan>NPC nói:</color> " + lastReply);
             Debug.Log("<color=orange>ĐIỂM SỐ:</color> " + lastScore);
-
-            // ĐẨY CHỮ LÊN UI
-            if (dialoCtr != null)
-            {
-                dialoCtr.NPC_Say(lastReply);
-            }
         }
         catch
         {
             Debug.LogError("❌ AI trả JSON sai format hoặc thiếu trường!");
             Debug.LogError("Raw trả về: " + raw);
+        }
+    }
+
+
+    public void OpenChat()
+    {
+            if (isChatting) return;
+            isChatting = true;
+            StartCoroutine(PostGreeting());
+    }
+
+    IEnumerator PostGreeting()
+    {
+        string url = "https://api.groq.com/openai/v1/chat/completions";
+
+        ChatRequest requestData = new ChatRequest
+        {
+            model = "llama-3.1-8b-instant",
+            messages = new Message[]
+            {
+                new Message { role = "system", content = promptAI },
+                new Message
+                {
+                    role = "user",
+                    content =
+                        "Có người vừa gọi bà để bắt chuyện ngày Tết. " +
+                        "Đây KHÔNG phải lời chúc. " +
+                        "Hãy đáp lại MỘT câu rất ngắn như khi bị gọi. " +
+                        "Score bắt buộc bằng 0."
+                }
+            }
+        };
+
+        string jsonPayload = JsonUtility.ToJson(requestData);
+
+        UnityWebRequest request = new UnityWebRequest(url, "POST");
+        request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonPayload));
+        request.downloadHandler = new DownloadHandlerBuffer();
+
+        request.SetRequestHeader("Authorization", "Bearer " + apiKey.Trim());
+        request.SetRequestHeader("Content-Type", "application/json");
+
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            GroqResponse response =
+                JsonUtility.FromJson<GroqResponse>(request.downloadHandler.text);
+
+            string raw = response.choices[0].message.content;
+
+            // ✅ PARSE JSON
+            AIScoreResult data = JsonUtility.FromJson<AIScoreResult>(raw);
+
+            lastReply = data.reply;
+            lastScore = data.score;
+
+            // ✅ CHỈ HIỆN CÂU NÓI
+            textSpeak.text = data.reply;
+
+            Debug.Log("<color=cyan>NPC bắt chuyện:</color> " + data.reply);
+        }
+        else
+        {
+            Debug.LogError("LỖI API (PostGreeting): " + request.downloadHandler.text);
         }
     }
 }
