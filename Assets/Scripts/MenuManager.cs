@@ -1,6 +1,8 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System.Collections;
+using System.Collections.Generic;
 
 public class MenuManager : MonoBehaviour
 {
@@ -15,6 +17,23 @@ public class MenuManager : MonoBehaviour
     public Transform canvasTransform;
     public string nextSceneName = "GamePlay";
 
+    [Header("Prefab image changes scene")]
+    public GameObject blackImage;
+
+
+    IEnumerator ImageBlackIn()
+    {
+        while (blackImage.transform.position.y != 540)
+        {
+            Debug.Log(blackImage.transform.position.y);
+            var y = Mathf.MoveTowards(blackImage.transform.position.y, 540, 500 * Time.deltaTime);
+            blackImage.transform.position = new Vector3(blackImage.transform.position.x, y, blackImage.transform.position.z);
+            yield return new WaitForSeconds(0.01f);
+        }
+        blackImage.transform.position = new Vector3(blackImage.transform.position.y, 540, blackImage.transform.position.z);//
+        yield return new WaitForSeconds(1);
+        SceneManager.LoadScene(nextSceneName);
+    }
     public void OnClickStart()
     {
         // Kiểm tra điều kiện: Tên trống OR MSSV trống OR chưa chọn Dropdown
@@ -44,11 +63,13 @@ public class MenuManager : MonoBehaviour
             if (UserList.Instance != null)
             {
                 UserList.Instance.UserAdd(user); // Hàm này trong UserList đã có SceneManager.LoadScene rồi
+                Debug.Log("UserList.Instance is null");
+                StartCoroutine(ImageBlackIn());
             }
             else
             {
-                // Phòng trường hợp UserList chưa khởi tạo
-                SceneManager.LoadScene(nextSceneName);
+                Debug.Log("UserList.Instance is null");
+                StartCoroutine(ImageBlackIn());
             }
         }
     }

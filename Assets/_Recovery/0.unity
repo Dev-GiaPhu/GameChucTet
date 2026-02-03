@@ -451,6 +451,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Menu - Prefab
       objectReference: {fileID: 0}
+    - target: {fileID: 5635520885024000735, guid: 2855d188bedf7084c895ef7aa7730f0f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8133405935715773852, guid: 2855d188bedf7084c895ef7aa7730f0f, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1

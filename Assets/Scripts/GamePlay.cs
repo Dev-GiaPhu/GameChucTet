@@ -34,6 +34,10 @@ public class GamePlay : MonoBehaviour
     public List<GameObject> chatNpcs;
     public bool openChating = false;
 
+
+    [Header("Internet")]
+    public bool connected = true;
+
     // ===== Dialogue =====
     private string[] dialogues =
     {
@@ -66,13 +70,14 @@ public class GamePlay : MonoBehaviour
 
     void Update()
     {
-        if(openChating == true && Input.GetKeyDown(KeyCode.Escape))//ESC
+        if((openChating == true && Input.GetKeyDown(KeyCode.Escape)) || openChating == true && connected == false)//ESC
         {
             foreach (GameObject chatNpc in chatNpcs)
             {
                 chatNpc.GetComponent<AI_NPC>().textSpeak.text = "";
                 chatNpc.GetComponent<AI_NPC>().isChatting = false;
                 chatNpc.SetActive(false);
+                connected = true;
             }
             openChating = false;
             readySelect = true;

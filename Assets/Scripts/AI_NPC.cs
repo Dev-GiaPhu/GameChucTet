@@ -74,6 +74,11 @@ public class AI_NPC : MonoBehaviour
 
     public bool isChatting = false;
 
+    public GamePlay gamePl;
+    [Header("UI Mat Ket Noi")]
+    public GameObject prefabMatKN;
+    public Transform canvas;
+
     public void StartChat()
     {
         Debug.Log("<color=yellow>Người chơi chúc:</color> " + playerQuestion);
@@ -145,10 +150,12 @@ public class AI_NPC : MonoBehaviour
             if (isChatting) return;
             isChatting = true;
             StartCoroutine(PostGreeting());
+            Debug.Log(gamePl.connected.ToString());
     }
 
     IEnumerator PostGreeting()
     {
+        textSpeak.text = "Loading....";
         string url = "https://api.groq.com/openai/v1/chat/completions";
 
         ChatRequest requestData = new ChatRequest
@@ -201,6 +208,14 @@ public class AI_NPC : MonoBehaviour
         else
         {
             Debug.LogError("LỖI API (PostGreeting): " + request.downloadHandler.text);
+            gamePl.connected = false;
+            Debug.Log("<color=red>Đã hết thời gian chờ kết nối. Vui lòng thử lại!</color>");
+
+            if (prefabMatKN != null)
+            {
+                Instantiate(prefabMatKN, canvas);
+                Debug.Log("<color=red>Đã hết thời gian chờ kết nối. Vui lòng thử lại!</color>");
+            }
         }
     }
 }

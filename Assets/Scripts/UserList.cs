@@ -22,6 +22,5 @@ public class UserList : MonoBehaviour
         Users.Add(user);
         string line = $"{user.name}|{user.mssv}|{user.tuoi}|{user.nganhHoc}\n";
         File.AppendAllText(filePath, line, Encoding.UTF8);
-        SceneManager.LoadScene("GamePlay");
     }
 }
