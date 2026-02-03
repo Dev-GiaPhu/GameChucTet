@@ -79,6 +79,9 @@ public class AI_NPC : MonoBehaviour
     public GameObject prefabMatKN;
     public Transform canvas;
 
+    [Header("Text Input")]
+    public TMP_InputField textInput;
+
     public void StartChat()
     {
         Debug.Log("<color=yellow>Người chơi chúc:</color> " + playerQuestion);
@@ -217,5 +220,11 @@ public class AI_NPC : MonoBehaviour
                 Debug.Log("<color=red>Đã hết thời gian chờ kết nối. Vui lòng thử lại!</color>");
             }
         }
+    }
+
+    public void Send()
+    {
+        playerQuestion = textInput.text;
+        StartCoroutine(PostToGroq());
     }
 }
