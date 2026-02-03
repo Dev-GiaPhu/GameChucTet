@@ -25,12 +25,12 @@ public class MenuManager : MonoBehaviour
     {
         while (blackImage.transform.position.y != 540)
         {
-            Debug.Log(blackImage.transform.position.y);
             var y = Mathf.MoveTowards(blackImage.transform.position.y, 540, 500 * Time.deltaTime);
-            blackImage.transform.position = new Vector3(blackImage.transform.position.x, y, blackImage.transform.position.z);
+            blackImage.transform.position = new Vector3(960, y, blackImage.transform.position.z);
+            Debug.Log($"{blackImage.transform.position.x} | {blackImage.transform.position.y} | {blackImage.transform.position.z}");
             yield return new WaitForSeconds(0.01f);
         }
-        blackImage.transform.position = new Vector3(blackImage.transform.position.y, 540, blackImage.transform.position.z);//
+        blackImage.transform.position = new Vector3(960, 540, blackImage.transform.position.z);//
         yield return new WaitForSeconds(1);
         SceneManager.LoadScene(nextSceneName);
     }
